@@ -21,7 +21,6 @@ class RegisteredUserController extends Controller
     {
         return view('auth.register');
     }
-
     /**
      * Handle an incoming registration request.
      *
@@ -29,22 +28,33 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // dd($request->file('photo_profile'));
+        // dd([
+        //     'Data Teks' => $request->all(),
+        //     'Data File (PHP Asli)' => $_FILES
+        // ]);
+
+        // 1. Validasi Input
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'photo_profile' => ['nullable', 'image', 'max:5024'], // Optional profile photo
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'photo_profile' => ['nullable', 'image', 'max:1024'], // Batas maksimal 1 MB
         ]);
 
+        // 2. Proses Upload Foto (Jika ada)
         $photoPath = null;
-    	if ($request->hasFile('photo_profile')) {
-        	$photoPath = $request->file('photo_profile')->store('photos', 'public');
-    	}
+        if ($request->hasFile('photo_profile')) {
+            $photoPath = $request->file('photo_profile')->store('photos', 'public');
+        }
 
+
+        // 3. Simpan Data User ke Database
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'photo_profile' => $photoPath, // <-- Bagian penting yang sebelumnya terlewat
         ]);
 
         event(new Registered($user));

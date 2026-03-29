@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ProfileUpdateRequest extends FormRequest
+class Request extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -25,6 +25,8 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            // Tambahkan baris ini
+            'photo_profile' => ['nullable', 'image', 'max:1024'],
         ];
     }
 }
