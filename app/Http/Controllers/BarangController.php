@@ -16,28 +16,29 @@ class BarangController extends Controller
     }
 
     public function dashboard()
-{
-    // Hitung data untuk cards
-    $totalBarang   = Barang::count();
-    $totalKategori = Barang::distinct('kategori')->count('kategori');
-    $stokHabis     = Barang::where('stok', '<=', 5)->count();
-    $barangHariIni = Barang::whereDate('created_at', now()->toDateString())->count();
+    {
+        // Hitung data untuk cards
+        $totalBarang   = Barang::count();
+        $totalKategori = Barang::distinct('kategori')->count('kategori');
+        $stokHabis     = Barang::where('stok', '<=', 5)->count();
+        $barangHariIni = Barang::whereDate('created_at', now()->toDateString())->count();
 
-    // Ambil data barang untuk tabel
-    $barangs = Barang::latest()->paginate(10);
+        // Ambil data barang untuk tabel
+        $barangs = Barang::latest()->paginate(10);
 
-    return view('dashboard', compact(
-        'totalBarang',
-        'totalKategori',
-        'stokHabis',
-        'barangHariIni',
-        'barangs'
-    ));
-}
+        return view('dashboard', compact(
+            'totalBarang',
+            'totalKategori',
+            'stokHabis',
+            'barangHariIni',
+            'barangs'
+        ));
+    }
     public function create()
     {
         return view('barang.create');
     }
+    
 
     public function store(Request $request)
     {
@@ -68,6 +69,7 @@ class BarangController extends Controller
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan.');
     }
+
 
     public function edit(Barang $barang)
     {
